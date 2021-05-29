@@ -53,7 +53,7 @@
             string payload = sb.ToString();
 
             // TODO: get the secret by the merchantId; this should be async method.
-            string secret = await Task.FromResult<string>(string.Empty).ConfigureAwait(false);
+            string secret = await Task.FromResult<string>("TODO").ConfigureAwait(false);
 
             string evaluatedChecksum = this.GetHmacSha1(payload: payload, secret: secret);
 

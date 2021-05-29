@@ -78,7 +78,7 @@
                 this.logger.LogError((EventId)(int)PaymentResponseStatus.Error, ex, PaymentResponseStatus.Error.ToString());
                 return this.Ok(new PayInitResponseModel
                 {
-                    Status = PaymentResponseStatus.InvalidIdn.ToStatusString(),
+                    Status = PaymentResponseStatus.Error.ToStatusString(),
                 });
             }
         }
