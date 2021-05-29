@@ -5,6 +5,7 @@
     <UserSecretsId>75877082-04cd-4f77-af8d-fac287bf2d7c</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\EpayPaymentServiceDotNet.Common.Constants\EpayPaymentServiceDotNet.Common.Constants.csproj" />
+    <ProjectReference Include="..\..\Common\EpayPaymentServiceDotNet.Common.Enumerations\EpayPaymentServiceDotNet.Common.Enumerations.csproj" />
+    <ProjectReference Include="..\..\Services\EpayPaymentServiceDotNet.Services.Web.Models\EpayPaymentServiceDotNet.Services.Web.Models.csproj" />
   </ItemGroup>
 
 </Project>
