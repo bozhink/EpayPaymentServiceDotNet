@@ -5,4 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Contracts\EpayPaymentServiceDotNet.Contracts.Services.Web\EpayPaymentServiceDotNet.Contracts.Services.Web.csproj" />
+  </ItemGroup>
+
 </Project>

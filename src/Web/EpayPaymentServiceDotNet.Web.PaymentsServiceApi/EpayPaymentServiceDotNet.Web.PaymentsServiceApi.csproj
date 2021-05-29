@@ -16,7 +16,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\EpayPaymentServiceDotNet.Common.Constants\EpayPaymentServiceDotNet.Common.Constants.csproj" />
     <ProjectReference Include="..\..\Common\EpayPaymentServiceDotNet.Common.Enumerations\EpayPaymentServiceDotNet.Common.Enumerations.csproj" />
+    <ProjectReference Include="..\..\Contracts\EpayPaymentServiceDotNet.Contracts.Services.Web\EpayPaymentServiceDotNet.Contracts.Services.Web.csproj" />
     <ProjectReference Include="..\..\Services\EpayPaymentServiceDotNet.Services.Web.Models\EpayPaymentServiceDotNet.Services.Web.Models.csproj" />
+    <ProjectReference Include="..\..\Services\EpayPaymentServiceDotNet.Services.Web\EpayPaymentServiceDotNet.Services.Web.csproj" />
   </ItemGroup>
 
 </Project>

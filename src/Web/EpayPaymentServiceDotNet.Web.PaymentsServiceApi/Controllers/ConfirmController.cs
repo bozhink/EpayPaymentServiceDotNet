@@ -1,38 +1,86 @@
 ﻿namespace EpayPaymentServiceDotNet.Web.PaymentsServiceApi.Controllers
 {
     using System;
+    using System.Net;
+    using System.Threading.Tasks;
     using EpayPaymentServiceDotNet.Common.Constants;
     using EpayPaymentServiceDotNet.Common.Enumerations;
+    using EpayPaymentServiceDotNet.Contracts.Services.Web;
     using EpayPaymentServiceDotNet.Services.Web.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     [Route(RouteConstants.PaymentsServiceApiConfirmRoute)]
     [ApiController]
     public class ConfirmController : ControllerBase
     {
+        private readonly IValidationWebService validationService;
+        private readonly ILogger logger;
+
+        public ConfirmController(IValidationWebService validationService, ILogger<ConfirmController> logger)
+        {
+            this.validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PayConfirmResponseModel))]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get(string idn, string merchantId, string tid, string date, int total, string type, string checksum, string? invoices = null)
+        public async Task<IActionResult> GetAsync(string idn, string merchantId, string tid, string date, int total, string type, string checksum, string? invoices = null)
         {
-            var method = this.ValidateRequestConsistency(idn, merchantId, tid, date, type, checksum);
-
-            if (this.ModelState.ErrorCount > 0)
+            try
             {
-                return this.BadRequest(this.ModelState);
-            }
+                var method = this.ValidateRequestConsistency(idn, merchantId, tid, date, type, checksum);
 
-            if (method == PaymentRequestMethod.Deposit && !(total > 0))
-            {
-                return this.Ok(new PayConfirmResponseModel
+                if (this.ModelState.ErrorCount > 0)
                 {
-                    Status = PaymentResponseStatus.InvalidDepositAmount.ToStatusString(),
+                    this.logger.LogError((EventId)(int)HttpStatusCode.BadRequest, this.ModelState.ToString());
+                    return this.BadRequest(this.ModelState);
+                }
+
+                if (method == PaymentRequestMethod.Deposit && !(total > 0))
+                {
+                    this.logger.LogWarning((EventId)(int)PaymentResponseStatus.InvalidDepositAmount, PaymentResponseStatus.InvalidDepositAmount.ToString());
+                    return this.Ok(new PayConfirmResponseModel
+                    {
+                        Status = PaymentResponseStatus.InvalidDepositAmount.ToStatusString(),
+                    });
+                }
+
+                bool isValidChecksum = await this.validationService.ValidateChecksumAsync(merchantId: merchantId, checksum: checksum, request: this.Request.QueryString.ToString()).ConfigureAwait(false);
+
+                if (!isValidChecksum)
+                {
+                    this.logger.LogWarning((EventId)(int)PaymentResponseStatus.InvalidChecksum, PaymentResponseStatus.InvalidChecksum.ToString());
+                    return this.Ok(new PayInitResponseModel
+                    {
+                        Status = PaymentResponseStatus.InvalidChecksum.ToStatusString(),
+                    });
+                }
+
+                bool isValidIdn = await this.validationService.ValidateIdnAsync(idn: idn).ConfigureAwait(false);
+
+                if (!isValidIdn)
+                {
+                    this.logger.LogWarning((EventId)(int)PaymentResponseStatus.InvalidIdn, PaymentResponseStatus.InvalidIdn.ToString());
+                    return this.Ok(new PayInitResponseModel
+                    {
+                        Status = PaymentResponseStatus.InvalidIdn.ToStatusString(),
+                    });
+                }
+
+                return this.Ok();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError((EventId)(int)PaymentResponseStatus.Error, ex, PaymentResponseStatus.Error.ToString());
+                return this.Ok(new PayInitResponseModel
+                {
+                    Status = PaymentResponseStatus.InvalidIdn.ToStatusString(),
                 });
             }
-
-            return this.Ok();
         }
 
         /// <summary>

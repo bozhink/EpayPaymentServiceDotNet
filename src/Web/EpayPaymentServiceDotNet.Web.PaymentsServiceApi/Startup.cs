@@ -2,6 +2,8 @@ namespace EpayPaymentServiceDotNet.Web.PaymentsServiceApi
 {
     using System;
     using EpayPaymentServiceDotNet.Common.Constants;
+    using EpayPaymentServiceDotNet.Contracts.Services.Web;
+    using EpayPaymentServiceDotNet.Services.Web;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -21,6 +23,8 @@ namespace EpayPaymentServiceDotNet.Web.PaymentsServiceApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IValidationWebService, ValidationWebService>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
