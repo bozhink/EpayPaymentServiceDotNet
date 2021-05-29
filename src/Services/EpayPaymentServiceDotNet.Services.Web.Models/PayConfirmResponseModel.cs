@@ -11,6 +11,6 @@
         /// Gets or sets the status.
         /// </summary>
         [JsonPropertyName("STATUS")]
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }

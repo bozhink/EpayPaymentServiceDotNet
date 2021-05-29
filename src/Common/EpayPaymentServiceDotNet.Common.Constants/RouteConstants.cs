@@ -8,7 +8,7 @@
         /// <summary>
         /// Payments service API route.
         /// </summary>
-        public const string PaymentsServiceApiRoute = "api/" + VersionConstants.PaymentsServiceApiVersion + "/epay/";
+        public const string PaymentsServiceApiRoute = "api/" + VersionConstants.PaymentsServiceApiVersion + "/epay";
 
         /// <summary>
         /// Payments service API init route.

@@ -24,6 +24,7 @@ namespace EpayPaymentServiceDotNet.Web.PaymentsServiceApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IValidationWebService, ValidationWebService>();
+            services.AddTransient<IInitWebService, InitWebService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

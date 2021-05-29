@@ -15,11 +15,13 @@
     [ApiController]
     public class InitController : ControllerBase
     {
+        private readonly IInitWebService service;
         private readonly IValidationWebService validationService;
         private readonly ILogger logger;
 
-        public InitController(IValidationWebService validationService, ILogger<InitController> logger)
+        public InitController(IInitWebService service, IValidationWebService validationService, ILogger<InitController> logger)
         {
+            this.service = service ?? throw new ArgumentNullException(nameof(service));
             this.validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -71,7 +73,30 @@
                     });
                 }
 
-                return this.Ok();
+                PayInitResponseModel responseModel;
+                switch (method)
+                {
+                    case PaymentRequestMethod.Check:
+                        responseModel = await this.service.CheckForChargesAsync(idn: idn, merchantId: merchantId).ConfigureAwait(false);
+                        break;
+
+                    case PaymentRequestMethod.Billing:
+                        responseModel = await this.service.OpenPaymentTransactionAsync(idn: idn, merchantId: merchantId, tid: tid).ConfigureAwait(false);
+                        break;
+
+                    case PaymentRequestMethod.Deposit:
+                        responseModel = await this.service.OpenDepositTransactionAsync(idn: idn, merchantId: merchantId, tid: tid, total: total ?? 0).ConfigureAwait(false);
+                        break;
+
+                    default:
+                        responseModel = new PayInitResponseModel
+                        {
+                            Status = PaymentResponseStatus.Error.ToStatusString(),
+                        };
+                        break;
+                }
+
+                return this.Ok(responseModel);
             }
             catch (Exception ex)
             {
