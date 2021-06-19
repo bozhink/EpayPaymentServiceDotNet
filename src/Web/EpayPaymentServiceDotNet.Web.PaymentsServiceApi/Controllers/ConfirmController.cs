@@ -71,12 +71,16 @@
                     });
                 }
 
-                return this.Ok();
+                // TODO: Implementation needed
+                return this.Ok(new PayConfirmResponseModel
+                {
+                    Status = PaymentResponseStatus.Ok.ToStatusString(),
+                });
             }
             catch (Exception ex)
             {
                 this.logger.LogError((EventId)(int)PaymentResponseStatus.Error, ex, PaymentResponseStatus.Error.ToString());
-                return this.Ok(new PayInitResponseModel
+                return this.Ok(new PayConfirmResponseModel
                 {
                     Status = PaymentResponseStatus.Error.ToStatusString(),
                 });
